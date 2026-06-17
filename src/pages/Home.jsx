@@ -12,7 +12,7 @@ const schemaValidation = yup.object({
 
 export default function Home(){
 
-	const { register, handleSubmit, getValues, watch, setError, clearErrors, formState:{ errors} } = useForm({
+	const { register, handleSubmit, watch, setError, clearErrors, formState:{ errors} } = useForm({
 		resolver: yupResolver(schemaValidation),
 	})
 
@@ -22,13 +22,31 @@ export default function Home(){
 		if(smoker === "ya" && !cigarete) setError("cigarete", {type:"manual", message:"Silahkan pilih rokok."})
 		else clearErrors("cigarete")
 
-	},[getValues, watch, smoker, clearErrors, cigarete, setError])
+	},[watch, smoker, clearErrors, cigarete, setError])
 
 	function onSubmitSurvey(e){
-		if(getValues("smoker") === "ya" && !getValues("cigarete").length){
-			setError("cigarete", {type:"manual", message:"Silahkan pilih rokok."})
-		}
-		console.log(e)
+    try{
+      const formData = {}
+      let surveys = []
+      if(smoker === "ya" && !cigarete.length){
+        setError("cigarete", {type:"manual", message:"Silahkan pilih rokok."})
+      }
+      
+      for (const props in e){
+        formData[props] = e[props]
+      }
+  
+      const surveysData = JSON.parse(window.localStorage.getItem("surveys"))
+      if(surveysData){
+        surveys = [...surveysData]
+      }
+      surveys.push(formData)
+      window.localStorage.setItem("surveys", JSON.stringify(surveys))
+      alert("Berhasil")
+      window.location.href = "/list"
+    } catch(err){
+      console.error(err.message)
+    }
 	}
 	
   return(
@@ -106,23 +124,23 @@ export default function Home(){
                     <label className="text-xl mb-8">Jika anda perokok, rokok apa yang anda pernah coba?</label>
                     <div className="text-md">
                         <div className="mb-1">
-                            <input type="checkbox" name="gudang-garam-filter" id="gudang-garam-filter"
+                            <input type="checkbox" name="gudang-garam-filter" id="gudang-garam-filter" value={"Gudang Garam Filter"}
 														{...register("cigarete")}
 														/>
                             <label className="ml-1" htmlFor="gudang-garam-filter">Gudang Garam Filter</label>
                         </div>
                         <div className="mb-1">
-                            <input type="checkbox" name="lucky-strike" id="lucky-strike"
+                            <input type="checkbox" name="lucky-strike" id="lucky-strike" value={"Lucky Srike"}
 														{...register("cigarete")}/>
                             <label className="ml-1" htmlFor="lucky-strike">Lucky Strike</label>
                         </div>
                         <div className="mb-1">
-                            <input type="checkbox" name="marlboro" id="marlboro"
+                            <input type="checkbox" name="marlboro" id="marlboro" value={"Marlboro"}
 														{...register("cigarete")}/>
                             <label className="ml-1" htmlFor="marlboro">Marlboro</label>
                         </div>
                         <div className="mb-1">
-                            <input type="checkbox" name="esse" id="esse"
+                            <input type="checkbox" name="esse" id="esse" value={"Esse"}
 														{...register("cigarete")}/>
                             <label className="ml-1" htmlFor="esse">Esse</label>
                         </div>
