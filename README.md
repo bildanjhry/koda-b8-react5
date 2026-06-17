@@ -1,16 +1,91 @@
-# React + Vite
+# Clone Form Google
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+Program form survery perokok dengan tampilan google form, untuk penangani masalah submission pada form, program ini menggunakan react hook form dan yup untuk validasinya
 
-Currently, two official plugins are available:
+## Tech Stacks:
+- React Js v19.x.x
+- TailwindCss v4.x.x
+- Vite v8.x.x
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Oxc](https://oxc.rs)
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/)
+## Schema validasi Yup:
 
-## React Compiler
+```jsx
+const schemaValidation = yup.object({
+	name: 
+	yup.string().required("Silahkan masukan nama anda.").min(3, "Nama anda terlalu pendek."),
+	age: 
+	yup.number().required("Silahkan masukan umur anda").positive().integer().min(18, "Anda harus diatas 18 tahun untuk ikut survey."),
+	gender: 
+	yup.string().required("Silahkan pilih kelamin anda"),
+	smoker: 
+	yup.string().required("Silahkan konfirmasi apakah anda seorang perokok"),
+})
 
-The React Compiler is not enabled on this template because of its impact on dev & build performances. To add it, see [this documentation](https://react.dev/learn/react-compiler/installation).
+```
+## Watching input form & manually set Error:
+```js
+// watching input
+const [cigarete, smoker] = watch(["cigarete", "smoker"])
+  
+useEffect(() => {
+	if(smoker === "ya" && !cigarete) setError("cigarete 
+	{type:"manual", message:"Silahkan pilih rokok."})
+	else clearErrors("cigarete")
 
-## Expanding the ESLint configuration
+},[watch, smoker, clearErrors, cigarete, setError])
+```
 
-If you are developing a production application, we recommend using TypeScript with type-aware lint rules enabled. Check out the [TS template](https://github.com/vitejs/vite/tree/main/packages/create-vite/template-react-ts) for information on how to integrate TypeScript and [`typescript-eslint`](https://typescript-eslint.io) in your project.
+### Customs Hook:
+```js
+export default function useSurvey(){
+	const [data, setData] = 
+	useState(JSON.parse(window?.localStorage?.getItem("surveys")))
+
+	return [data, (data) => {
+		setData((prev) => {
+			return [
+			...prev,
+			data
+		]})
+	}]
+}
+```
+
+### Submit handler:
+
+```js
+function onSubmitSurvey(e){
+  try{
+    const formData = {}
+    let surveys = []
+    if(smoker === "ya" && !cigarete.length){ // checking algorithm's flow 
+        setError("cigarete", {type:"manual", message:"Silahkan pilih rokok"})
+    }
+      
+    for (const props in e){
+      formData[props] = e[props]
+    }
+  
+    const surveysData = JSON.parse(window.localStorage.getItem("surveys"))
+    if(surveysData){
+      surveys = [...surveysData]
+    }
+    surveys.push(formData)
+    setData(surveys)  // set new data to the useSurvey's setter
+    window.localStorage.setItem("surveys", JSON.stringify(surveys))
+    
+    //navigate to list page
+    window.location.href = "/list"
+  } catch(err){
+    console.error(err.message)
+   }
+}
+
+```
+### Preview Demo:
+
+Form Page
+![alt text](image.png)
+
+Table Page:
+![alt text](image-1.png)

@@ -1,14 +1,7 @@
-import { useState, useEffect } from "react"
+import { useState } from "react"
 
 export default function useSurvey(){
-	const [data, setData] = useState([])
-	useEffect(() => {
-		function getSurveys(){
-			const surveys = JSON.parse(window.localStorage.getItem("surveys"))
-			setData(surveys)
-		}
-		getSurveys()
-	},[setData])
+	const [data, setData] = useState(JSON.parse(window?.localStorage?.getItem("surveys")))
 
 	return [data, (data) => {
 		setData((prev) => {

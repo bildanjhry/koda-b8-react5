@@ -2,7 +2,7 @@ import useSurvey from "../hook/useSurveys"
 
 export default function ListSurvey(){
 	const [data] = useSurvey()
-
+	
 	return(
 		<div className="flex justify-center flex-col items-center h-screen">
 			<h2 className="mb-7 text-3xl font-semibold">Table Survey</h2>
@@ -28,7 +28,7 @@ export default function ListSurvey(){
 							<td className="w-43">{item.gender}</td>
 							<td className="w-50">{item.smoker}</td>
 							<td className="w-100">
-								{item.cigarete.map((val, idx) =>(
+								{item.smoker === 'ya' && item?.cigarete?.map((val, idx) =>(
 									<ol key={idx}>
 										<li>{val}</li>
 									</ol>

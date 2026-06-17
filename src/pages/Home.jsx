@@ -2,6 +2,7 @@ import { useForm } from "react-hook-form"
 import { yupResolver } from "@hookform/resolvers/yup"
 import * as yup from "yup"
 import { useEffect } from "react"
+import useSurvey from "../hook/useSurveys"
 
 const schemaValidation = yup.object({
 	name: yup.string().required("Silahkan masukan nama anda.").min(3, "Nama anda terlalu pendek."),
@@ -11,13 +12,14 @@ const schemaValidation = yup.object({
 })
 
 export default function Home(){
-
+  const [ , setData] = useSurvey() // customs hook
 	const { register, handleSubmit, watch, setError, clearErrors, formState:{ errors} } = useForm({
 		resolver: yupResolver(schemaValidation),
 	})
 
-	const [cigarete, smoker] = watch(["cigarete", "smoker"])
-
+  // watching input
+  const [cigarete, smoker] = watch(["cigarete", "smoker"])
+  
 	useEffect(() => {
 		if(smoker === "ya" && !cigarete) setError("cigarete", {type:"manual", message:"Silahkan pilih rokok."})
 		else clearErrors("cigarete")
@@ -28,7 +30,7 @@ export default function Home(){
     try{
       const formData = {}
       let surveys = []
-      if(smoker === "ya" && !cigarete.length){
+      if(smoker === "ya" && !cigarete.length){ // checking algorithm's flow 
         setError("cigarete", {type:"manual", message:"Silahkan pilih rokok."})
       }
       
@@ -41,8 +43,10 @@ export default function Home(){
         surveys = [...surveysData]
       }
       surveys.push(formData)
+      setData(surveys)  // set new data to the useSurvey's setter
       window.localStorage.setItem("surveys", JSON.stringify(surveys))
-      alert("Berhasil")
+      
+      //navigate to list page
       window.location.href = "/list"
     } catch(err){
       console.error(err.message)
